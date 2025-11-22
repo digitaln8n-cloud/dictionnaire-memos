@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Dictionnaire Mémos Techniques - Cybersécurité</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 30px;
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box input {
+            flex: 1;
+            min-width: 250px;
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .memo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .memo-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .memo-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .memo-term {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .memo-definition {
+            color: var(--dark);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .memo-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-edit {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #d97706;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 1.2rem;
+        }
+
+        .category-tag {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .memo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.active {
+            display: flex;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .filter-info {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-info.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📚 Dictionnaire Mémos Techniques</h1>
+            <p>Cybersécurité - CompTIA Security+ SY0-701</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalMemos">0</div>
+                    <div class="stat-label">Mémos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="todayAdded">0</div>
+                    <div class="stat-label">Ajoutés aujourd'hui</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Rechercher un terme ou définition...">
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    ➕ Ajouter Mémo
+                </button>
+                <button class="btn btn-secondary" onclick="importData()">
+                    📥 Importer JSON
+                </button>
+                <button class="btn btn-danger" onclick="clearAll()">
+                    🗑️ Tout Effacer
+                </button>
+            </div>
+        </div>
+
+        <!-- Filter Info -->
+        <div class="filter-info" id="filterInfo">
+            <span>🔍 Résultats de recherche : <strong id="filterCount">0</strong></span>
+            <button class="btn-small btn-secondary" onclick="clearSearch()">Effacer</button>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="memo-grid" id="memoGrid"></div>
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-state-icon">📝</div>
+                <div class="empty-state-text">Aucun mémo pour le moment. Commencez par en ajouter un !</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="memoModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Ajouter un Mémo</div>
+            <form id="memoForm">
+                <div class="form-group">
+                    <label for="termInput">Terme (EN) *</label>
+                    <input type="text" id="termInput" placeholder="Ex: Smishing" required>
+                </div>
+                <div class="form-group">
+                    <label for="definitionInput">Définition / Mémo Technique *</label>
+                    <textarea id="definitionInput" placeholder="Ex: Phishing par SMS" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="categoryInput">Catégorie (optionnel)</label>
+                    <input type="text" id="categoryInput" placeholder="Ex: Social Engineering, Malware, Network...">
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        💾 Enregistrer
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                        ❌ Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="fileInput" accept=".json" style="display: none;">
+
+    <script>
+        // Data storage
+        let memos = [];
+        let editingIndex = -1;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMemos();
+            renderMemos();
+            
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                filterMemos(e.target.value);
+            });
+
+            // Form submission
+            document.getElementById('memoForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveMemo();
+            });
+
+            // File input for import
+            document.getElementById('fileInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            if (Array.isArray(data)) {
+                                let imported = 0;
+                                data.forEach(m => {
+                                    if (!m.term || !m.definition) return;
+                                    const termNorm = m.term.trim().toLowerCase();
+                                    const exists = memos.some(existing => existing.term.trim().toLowerCase() === termNorm);
+                                    if (!exists) {
+                                        memos.push({
+                                            term: m.term.trim(),
+                                            definition: m.definition.trim(),
+                                            category: (m.category || '').trim(),
+                                            date: m.date || new Date().toISOString()
+                                        });
+                                        imported++;
+                                    }
+                                });
+                                saveMemos();
+                                renderMemos();
+                                showToast('✅ Import réussi ! ' + imported + ' mémos importés (sans doublons).');
+                            } else {
+                                showToast('❌ Format de fichier invalide.');
+                            }
+                        } catch (error) {
+                            showToast('❌ Erreur lors de l\'import.');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            });
+        });
+
+        // Load memos from localStorage
+        function loadMemos() {
+            const stored = localStorage.getItem('cyberMemos');
+            if (stored) {
+                memos = JSON.parse(stored);
+            } else {
+                memos = [
+                    { term: "Phishing", definition: "Email frauduleux imitant source légitime", category: "Social Engineering", date: new Date().toISOString() },
+                    { term: "Smishing", definition: "Phishing par SMS", category: "Social Engineering", date: new Date().toISOString() },
+                    { term: "Vishing", definition: "Phishing par appel téléphonique", category: "Social Engineering", date: new Date().toISOString() },
+                    { term: "IDS", definition: "Système de détection d'intrusion (alerte seulement)", category: "Network Security", date: new Date().toISOString() },
+                    { term: "IPS", definition: "Système de prévention d'intrusion (détecte + bloque)", category: "Network Security", date: new Date().toISOString() },
+                    { term: "SIEM", definition: "Collecte logs + corrélation + alertes centralisées", category: "Security Operations", date: new Date().toISOString() },
+                    { term: "Zero-day", definition: "Vulnérabilité inconnue/non corrigée", category: "Vulnerabilities", date: new Date().toISOString() },
+                    { term: "Ransomware", definition: "Malware qui chiffre données et demande rançon", category: "Malware", date: new Date().toISOString() }
+                ];
+                saveMemos();
+            }
+        }
+
+        // Save memos to localStorage
+        function saveMemos() {
+            localStorage.setItem('cyberMemos', JSON.stringify(memos));
+        }
+
+        // Render memos
+        function renderMemos(filteredMemos = null) {
+            const grid = document.getElementById('memoGrid');
+            const emptyState = document.getElementById('emptyState');
+            const memosToRender = filteredMemos !== null ? filteredMemos : memos;
+
+            grid.innerHTML = '';
+
+            if (memosToRender.length === 0) {
+                emptyState.style.display = 'block';
+                grid.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                grid.style.display = 'grid';
+
+                memosToRender.forEach((memo, index) => {
+                    const actualIndex = filteredMemos ? memos.indexOf(memo) : index;
+
+                    const card = document.createElement('div');
+                    card.className = 'memo-card';
+                    
+                    const termDiv = document.createElement('div');
+                    termDiv.className = 'memo-term';
+                    const termSpan = document.createElement('span');
+                    termSpan.textContent = memo.term;
+                    termDiv.appendChild(termSpan);
+                    
+                    const defDiv = document.createElement('div');
+                    defDiv.className = 'memo-definition';
+                    defDiv.textContent = memo.definition;
+                    
+                    card.appendChild(termDiv);
+                    card.appendChild(defDiv);
+                    
+                    if (memo.category) {
+                        const catTag = document.createElement('span');
+                        catTag.className = 'category-tag';
+                        catTag.textContent = memo.category;
+                        card.appendChild(catTag);
+                    }
+                    
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'memo-actions';
+                    
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'btn-small btn-edit';
+                    editBtn.textContent = '✏️ Modifier';
+                    editBtn.addEventListener('click', () => editMemo(actualIndex));
+                    
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn-small btn-delete';
+                    deleteBtn.textContent = '🗑️ Supprimer';
+                    deleteBtn.addEventListener('click', () => deleteMemo(actualIndex));
+                    
+                    actionsDiv.appendChild(editBtn);
+                    actionsDiv.appendChild(deleteBtn);
+                    card.appendChild(actionsDiv);
+                    
+                    grid.appendChild(card);
+                });
+            }
+
+            updateStats();
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalMemos').textContent = memos.length;
+            
+            const today = new Date().toDateString();
+            const todayCount = memos.filter(m => {
+                const memoDate = new Date(m.date);
+                return memoDate.toDateString() === today;
+            }).length;
+            document.getElementById('todayAdded').textContent = todayCount;
+        }
+
+        // Filter memos
+        function filterMemos(searchTerm) {
+            const filterInfo = document.getElementById('filterInfo');
+            const filterCount = document.getElementById('filterCount');
+
+            if (!searchTerm.trim()) {
+                filterInfo.classList.remove('active');
+                renderMemos();
+                return;
+            }
+
+            const filtered = memos.filter(memo => 
+                memo.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                memo.definition.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (memo.category && memo.category.toLowerCase().includes(searchTerm.toLowerCase()))
+            );
+
+            filterInfo.classList.add('active');
+            filterCount.textContent = filtered.length;
+            renderMemos(filtered);
+        }
+
+        // Clear search
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterInfo').classList.remove('active');
+            renderMemos();
+        }
+
+        // Open add modal
+        function openAddModal() {
+            editingIndex = -1;
+            document.getElementById('modalTitle').textContent = 'Ajouter un Mémo';
+            document.getElementById('termInput').value = '';
+            document.getElementById('definitionInput').value = '';
+            document.getElementById('categoryInput').value = '';
+            document.getElementById('memoModal').classList.add('active');
+            document.getElementById('termInput').focus();
+        }
+
+        // Edit memo
+        function editMemo(index) {
+            editingIndex = index;
+            const memo = memos[index];
+            document.getElementById('modalTitle').textContent = 'Modifier le Mémo';
+            document.getElementById('termInput').value = memo.term;
+            document.getElementById('definitionInput').value = memo.definition;
+            document.getElementById('categoryInput').value = memo.category || '';
+            document.getElementById('memoModal').classList.add('active');
+            document.getElementById('termInput').focus();
+        }
+
+        // Save memo (ajout / modification) avec anti-doublons
+        function saveMemo() {
+            const term = document.getElementById('termInput').value.trim();
+            const definition = document.getElementById('definitionInput').value.trim();
+            const category = document.getElementById('categoryInput').value.trim();
+
+            if (!term || !definition) {
+                showToast('❌ Le terme et la définition sont obligatoires.');
+                return;
+            }
+
+            const termNorm = term.toLowerCase();
+
+            const duplicateIndex = memos.findIndex((m, i) => 
+                m.term.trim().toLowerCase() === termNorm && i !== editingIndex
+            );
+
+            if (duplicateIndex !== -1) {
+                showToast('❌ Ce terme existe déjà dans vos mémos.');
+                return;
+            }
+
+            const memo = {
+                term,
+                definition,
+                category,
+                date: editingIndex === -1 ? new Date().toISOString() : memos[editingIndex].date
+            };
+
+            if (editingIndex === -1) {
+                memos.unshift(memo);
+                showToast('✅ Mémo ajouté avec succès !');
+            } else {
+                memos[editingIndex] = memo;
+                showToast('✅ Mémo modifié avec succès !');
+            }
+
+            saveMemos();
+            renderMemos();
+            closeModal();
+        }
+
+        // Delete memo
+        function deleteMemo(index) {
+            if (index < 0 || index >= memos.length) {
+                showToast('❌ Impossible de supprimer ce mémo.');
+                return;
+            }
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce mémo ?')) {
+                memos.splice(index, 1);
+                saveMemos();
+                renderMemos();
+                showToast('✅ Mémo supprimé.');
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('memoModal').classList.remove('active');
+        }
+
+        // Import data
+        function importData() {
+            document.getElementById('fileInput').click();
+        }
+
+        // Clear all
+        function clearAll() {
+            if (confirm('⚠️ ATTENTION : Cela supprimera TOUS vos mémos de manière permanente. Voulez-vous continuer ?')) {
+                if (confirm('Dernière confirmation : Êtes-vous VRAIMENT sûr ?')) {
+                    memos = [];
+                    saveMemos();
+                    renderMemos();
+                    showToast('✅ Tous les mémos ont été supprimés.');
+                }
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.add('active');
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // Close modal on click outside
+        document.getElementById('memoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
